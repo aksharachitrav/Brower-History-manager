@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser History Manager - DSA Project</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Font: Inter & Fira Code for clean modern UI & code aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Global App Header -->
+    <header class="app-header">
+        <div class="logo-area">
+            <div class="logo-icon">🌐</div>
+            <div class="logo-text">
+                <h1>Browser History Manager</h1>
+                <span class="badge dsa-tag">DSA Mini-Project &bull; Linked List &amp; Array</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <span class="project-info-tag">🎓 2nd Year B.Tech Computer Science</span>
+            <button id="toggleDsaPanelBtn" class="btn btn-secondary btn-sm" title="Toggle DSA Live Visualizer">
+                <span>🧩</span> Toggle DSA Visualizer
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Application Container (Two Columns: Browser + Side Panel) -->
+    <main class="main-container">
+        
+        <!-- ============================================ -->
+        <!-- LEFT COLUMN: SIMULATED WEB BROWSER INTERFACE -->
+        <!-- ============================================ -->
+        <section class="browser-window" aria-label="Web Browser Window">
+            
+            <!-- Window Title Bar & Tabs -->
+            <div class="window-titlebar">
+                <div class="window-controls">
+                    <span class="control-dot close"></span>
+                    <span class="control-dot minimize"></span>
+                    <span class="control-dot maximize"></span>
+                </div>
+                <div class="browser-tabs">
+                    <div class="tab active" id="activeBrowserTab">
+                        <span class="tab-favicon" id="tabFavicon">🏠</span>
+                        <span class="tab-title" id="tabTitle">Home - New Tab</span>
+                        <span class="tab-close">&times;</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Browser Navigation & Address Toolbar -->
+            <div class="browser-toolbar">
+                <div class="nav-buttons">
+                    <!-- BACK BUTTON: Powered by Linked List (current.prev) -->
+                    <button id="backBtn" class="nav-btn" title="Go Back (Linked List: current.prev)" disabled>
+                        <span class="btn-icon">&#8592;</span>
+                        <span class="btn-label">Back</span>
+                    </button>
+
+                    <!-- FORWARD BUTTON: Powered by Linked List (current.next) -->
+                    <button id="forwardBtn" class="nav-btn" title="Go Forward (Linked List: current.next)" disabled>
+                        <span class="btn-icon">&#8594;</span>
+                        <span class="btn-label">Forward</span>
+                    </button>
+
+                    <!-- RELOAD BUTTON -->
+                    <button id="reloadBtn" class="nav-btn" title="Reload current page">
+                        <span class="btn-icon">&#8635;</span>
+                    </button>
+
+                    <!-- HOME BUTTON -->
+                    <button id="homeBtn" class="nav-btn" title="Go to Home Screen">
+                        <span class="btn-icon">&#8962;</span>
+                    </button>
+                </div>
+
+                <!-- URL Omnibox / Input Form -->
+                <form id="urlForm" class="url-bar-container">
+                    <div class="url-input-wrapper">
+                        <span class="lock-icon" id="securityBadge" title="Secure Connection">&#128274;</span>
+                        <input 
+                            type="text" 
+                            id="urlInput" 
+                            placeholder="Enter a website URL (e.g. google.com, wikipedia.org, github.com)..." 
+                            autocomplete="off" 
+                            spellcheck="false"
+                            required
+                        >
+                        <button type="button" id="clearUrlInputBtn" class="icon-btn-clear" title="Clear input">&times;</button>
+                    </div>
+                    <!-- VISIT BUTTON -->
+                    <button type="submit" id="visitBtn" class="btn btn-primary visit-btn">
+                        <span>Visit</span>
+                        <span class="shortcut-arrow">&#10140;</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Quick Bookmarks Bar -->
+            <div class="bookmarks-bar">
+                <span class="bookmarks-label">Quick Sites:</span>
+                <button class="bookmark-chip" data-url="https://google.com">🔍 Google</button>
+                <button class="bookmark-chip" data-url="https://wikipedia.org">📚 Wikipedia</button>
+                <button class="bookmark-chip" data-url="https://github.com">🐙 GitHub</button>
+                <button class="bookmark-chip" data-url="https://geeksforgeeks.org">💻 GeeksforGeeks</button>
+                <button class="bookmark-chip" data-url="https://youtube.com">▶️ YouTube</button>
+                <button class="bookmark-chip" data-url="https://stackoverflow.com">🥞 StackOverflow</button>
+            </div>
+
+            <!-- Browser Viewport / Active Page Display -->
+            <div class="browser-viewport" id="browserViewport">
+                
+                <!-- State 1: Active Website View (dynamically rendered) -->
+                <div class="page-container" id="pageDisplay">
+                    <!-- Injected via JavaScript -->
+                </div>
+
+            </div>
+
+            <!-- Browser Status Footer -->
+            <div class="browser-statusbar">
+                <div class="status-left">
+                    <span class="status-dot online"></span>
+                    <span id="networkStatus">Status: Ready</span>
+                </div>
+                <div class="status-center">
+                    <span id="currentPageIndicator">Current Page: None (Home)</span>
+                </div>
+                <div class="status-right">
+                    <span id="dsaStatusIndicator">Active Node: null</span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================ -->
+        <!-- RIGHT COLUMN: HISTORY & DSA INSPECTION PANEL -->
+        <!-- ============================================ -->
+        <aside class="side-panel" aria-label="History and DSA Inspector">
+            
+            <!-- Side Panel Tabs -->
+            <div class="panel-tab-header">
+                <button class="panel-tab active" id="tabHistoryBtn" data-target="panelHistory">
+                    <span>📜</span> History <span class="badge" id="historyCountBadge">0</span>
+                </button>
+                <button class="panel-tab" id="tabVisualizerBtn" data-target="panelVisualizer">
+                    <span>🧩</span> DSA Visualizer
+                </button>
+                <button class="panel-tab" id="tabTheoryBtn" data-target="panelTheory">
+                    <span>💡</span> Viva Notes
+                </button>
+            </div>
+
+            <div class="panel-content-body">
+                
+                <!-- ============================================ -->
+                <!-- PANEL 1: HISTORY (ARRAY IMPLEMENTATION) -->
+                <!-- ============================================ -->
+                <div class="tab-pane active" id="panelHistory">
+                    
+                    <div class="pane-header">
+                        <div class="pane-title-group">
+                            <h2>Browser History</h2>
+                            <p class="data-structure-note">
+                                <span class="badge-code">Data Structure: Array []</span>
+                                <span>Stores chronological history log.</span>
+                            </p>
+                        </div>
+                        <!-- CLEAR HISTORY BUTTON -->
+                        <button id="clearHistoryBtn" class="btn btn-danger btn-sm" title="Clear all history from Array and Linked List">
+                            <span>🗑️</span> Clear History
+                        </button>
+                    </div>
+
+                    <!-- SEARCH HISTORY BOX -->
+                    <div class="search-box-wrapper">
+                        <span class="search-icon">🔎</span>
+                        <input 
+                            type="text" 
+                            id="searchHistoryInput" 
+                            placeholder="Search history by URL or title (Linear Search in Array)..."
+                            autocomplete="off"
+                        >
+                        <button id="clearSearchBtn" class="icon-btn-clear" title="Clear search">&times;</button>
+                    </div>
+
+                    <!-- Search Result Info Banner -->
+                    <div id="searchResultInfo" class="search-result-info hidden">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- History Items List Container -->
+                    <div class="history-list-wrapper">
+                        <div class="history-list-header">
+                            <span>Recent Visited Websites</span>
+                            <span class="sort-indicator">Newest First (Array unshift)</span>
+                        </div>
+                        <ul id="historyList" class="history-list" aria-live="polite">
+                            <!-- Populated dynamically via Array traversal in JS -->
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- ============================================ -->
+                <!-- PANEL 2: LIVE DSA VISUALIZER -->
+                <!-- ============================================ -->
+                <div class="tab-pane" id="panelVisualizer">
+                    
+                    <div class="pane-header">
+                        <div class="pane-title-group">
+                            <h2>Data Structures Inspector</h2>
+                            <p class="data-structure-note">Live visual representation of the active Doubly Linked List &amp; Array memory.</p>
+                        </div>
+                        <button id="refreshVisualizerBtn" class="btn btn-secondary btn-sm" title="Refresh Live View">
+                            <span>🔄</span> Refresh
+                        </button>
+                    </div>
+
+                    <!-- Visualizer 1: Doubly Linked List -->
+                    <div class="visualizer-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">🔗</span>
+                                <h3>Doubly Linked List (Back/Forward Navigation)</h3>
+                            </div>
+                            <span class="complexity-tag">O(1) Back / Forward</span>
+                        </div>
+                        <p class="card-desc">
+                            Each visited page creates a <code>Node</code> with <code>prev</code> and <code>next</code> pointers. 
+                            The pointer <code>current</code> marks your active page.
+                        </p>
+                        
+                        <div class="linked-list-scroll-view" id="linkedListVisualizer">
+                            <!-- Dynamically generated chain of nodes -->
+                        </div>
+
+                        <div class="dsa-pointers-legend">
+                            <span class="legend-item"><span class="legend-color current-node"></span> Active / Current Page</span>
+                            <span class="legend-item"><span class="legend-color normal-node"></span> Visited Node</span>
+                            <span class="legend-item"><span class="legend-arrow">&larr;&rarr;</span> Pointers (prev / next)</span>
+                        </div>
+                    </div>
+
+                    <!-- Visualizer 2: History Array Storage -->
+                    <div class="visualizer-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">📊</span>
+                                <h3>Array Storage (History Log)</h3>
+                            </div>
+                            <span class="complexity-tag">O(N) Search / O(1) Prepend</span>
+                        </div>
+                        <p class="card-desc">
+                            Stores all history items linearly as <code>historyArray[index]</code>. Used for chronological timeline and search.
+                        </p>
+                        
+                        <div class="array-memory-view" id="arrayVisualizer">
+                            <!-- Dynamically generated array cells -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ============================================ -->
+                <!-- PANEL 3: VIVA VOCE & THEORY REFERENCE -->
+                <!-- ============================================ -->
+                <div class="tab-pane" id="panelTheory">
+                    <div class="pane-header">
+                        <div class="pane-title-group">
+                            <h2>Viva Voce Quick Reference</h2>
+                            <p class="data-structure-note">Concise answers to common college examination questions.</p>
+                        </div>
+                    </div>
+
+                    <div class="viva-cards-container">
+                        <div class="viva-card">
+                            <h4>❓ Why Doubly Linked List for Browser Navigation?</h4>
+                            <p>
+                                <strong>Answer:</strong> Browsers require bidirectional movement (Back &amp; Forward). 
+                                A Doubly Linked List has two pointers: <code>prev</code> (for Back) and <code>next</code> (for Forward).
+                                Moving between pages takes <strong>O(1) constant time</strong> without shifting elements.
+                            </p>
+                        </div>
+
+                        <div class="viva-card">
+                            <h4>❓ What happens when you visit a new URL after clicking Back?</h4>
+                            <p>
+                                <strong>Answer:</strong> Any forward history ahead of <code>current</code> is discarded/orphaned 
+                                (<code>current.next = null</code>), and the new node is linked. This matches real browser behavior!
+                            </p>
+                        </div>
+
+                        <div class="viva-card">
+                            <h4>❓ Why use an Array for History Log?</h4>
+                            <p>
+                                <strong>Answer:</strong> An Array maintains total chronological records with fast index-based access 
+                                and sequential iteration for features like search, sorting, filtering, and export.
+                            </p>
+                        </div>
+
+                        <div class="viva-card">
+                            <h4>❓ How does Search History work?</h4>
+                            <p>
+                                <strong>Answer:</strong> It performs a <strong>Linear Search</strong> over the history Array 
+                                with time complexity <strong>O(N)</strong>, comparing the search string against each entry's URL and title.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </aside>
+
+    </main>
+
+    <!-- Notification Toast Element -->
+    <div id="toastNotification" class="toast hidden" role="alert"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
